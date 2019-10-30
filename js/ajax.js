@@ -46,7 +46,23 @@ function ajax(options) {
     // 监听onload事件
     // 当xhr对象接受完响应数据后出发
     xhr.onload = function() {
-        success(xhr.responseText)
+        // 获取响应头中的数据
+        var ContenType = xhr.getResponseHeader('Content-Type');
+        // 服务器端返回的数据
+        var responseText = xhr.responseText;
+        // 如果响应头类型中包含application/json
+        if (ContenType.includes('application/json')) {
+            // 将Json字符串转成 Json对象
+            JSON.parse(responseText)
+        }
+        // 当状态码等于200的时候，交出xhr对象获得更多信息
+        if (xhr.status === 200) {
+            // 请求成功调用成功的处理函数
+            success(responseText, xhr)
+        } else {
+            // 请求失败调用失败的含糊，
+            error(responseText, xhr)
+        }
     }
 }
 
@@ -61,10 +77,10 @@ ajax({
             'Content - Type': 'application/x-www-form/urlencoded'
         },
         success: function(data) { //成功则调用  data参数哪来的？
-            console.log(data)
+            console.log(data, xhr)
         },
         error: function(data) { //失败则调用
-            console.log(data)
+            console.log(data, xhr)
         }
 
     })
