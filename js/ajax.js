@@ -1,10 +1,23 @@
 function ajax(options) {
+    var defaults = {
+        type: 'get',
+        url: '',
+        data: {},
+        herder: {
+            'Content-Type': 'application/x-www-form-urllencoded'
+        },
+        success: function() {},
+        error: function() {}
+
+    };
+    // 覆盖对象 使用options对象的属性覆盖defaults对象的属性
+    Object.assign(defaults, options);
     // 创建Ajax对象
     var xhr = new XMLHttpRequest();
     // 接受请求参数的变量
     var params = '';
-    for (const attr in options.data) {
-        params += attr + '=' + options.data[attr] + '&';
+    for (const attr in defaults.data) {
+        params += attr + '=' + defaults.data[attr] + '&';
     }
     /*
     要将参数处理成这个格式
@@ -15,23 +28,23 @@ function ajax(options) {
     params = params.substr(0, params.length - 1);
 
     // 判断请求方式
-    if (options.type == 'GET') {
+    if (defaults.type == 'GET') {
         // 拼接参数
-        options.url = options.url + '?' + params;
+        defaults.url = defaults.url + '?' + params;
     }
     // 配置Ajax对象
-    xhr.open(options.type, options.url);
+    xhr.open(defaults.type, defaults.url);
     // 如果是post请求
-    if (options.type == 'POST') {
+    if (defaults.type == 'POST') {
         // 用户希望向服务器端请求的参数的数据类型
-        var contnetType = options.herder['Content - Type'];
+        var contnetType = defaults.herder['Content - Type'];
         // 配置请求参数格式类型
         xhr.setRequestHeader('Content-Type', contnetType);
         // 判断用户希望传递的数据类型
         // 如果为json
         if (contnetType === 'application/json') {
             // 向服务器端传递json数据格式的参数
-            xhr.send(JSON.stringify(options.data))
+            xhr.send(JSON.stringify(defaults.data))
         } else {
             // 向服务器传递普通类型的请求参数
             xhr.send(params)
